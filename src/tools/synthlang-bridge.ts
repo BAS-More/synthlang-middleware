@@ -80,9 +80,12 @@ except Exception as e:
  */
 function runSynthLangCli(args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
-    const proc = spawn("synthlang", args, {
+    // shell: false to prevent word-splitting of multi-word arguments;
+    // use cmd /c on Windows so "synthlang" resolves via PATH (.cmd/.bat shims)
+    const isWin = process.platform === "win32";
+    const proc = spawn(isWin ? "cmd" : "synthlang", isWin ? ["/c", "synthlang", ...args] : args, {
       env: { ...process.env },
-      shell: true,
+      shell: false,
     });
 
     let stdout = "";
